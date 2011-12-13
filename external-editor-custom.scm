@@ -30,3 +30,9 @@
 	       '(key)
 	       (N_ "[external-editor] undo last read")
 	       (N_ "long description will be here"))
+
+(define-custom 'external-editor-unlink-after-read #t
+  '(external-editor)
+  '(boolean)
+  (N_ "unlink temporary file after read")
+  (N_ "long description will be here."))

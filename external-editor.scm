@@ -176,6 +176,10 @@
   (let ((filename (external-editor-context-filename pc)))
     (if filename
       (let ((str (external-editor-read-file filename)))
+        (if external-editor-unlink-after-read
+          (begin
+            (unlink filename)
+            (external-editor-context-set-filename! pc #f)))
         (if (and (string? str) (not (string=? str "")))
           (let ((sel (external-editor-acquire-text pc)))
             (external-editor-context-set-undo-str! pc
