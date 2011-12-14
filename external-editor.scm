@@ -40,6 +40,7 @@
     context-rec-spec
     (list
       (list 'filename #f)
+      (list 'primary #f) ; whether text is acquired from primary or selection
       (list 'undo-len 0)
       (list 'undo-str #f))))
 (define-record 'external-editor-context external-editor-context-rec-spec)
@@ -104,9 +105,9 @@
  #f
  )
 
-(define (external-editor-acquire-text pc)
+(define (external-editor-acquire-text pc id)
   (and-let*
-    ((ustr (im-acquire-text pc 'selection 'beginning 0 'full))
+    ((ustr (im-acquire-text pc id 'beginning 0 'full))
      (latter (ustr-latter-seq ustr)))
     (and (pair? latter)
          (car latter))))
@@ -136,17 +137,25 @@
                (_exit 1))
               (else
                pid)))))
+  (define (launch pc str primary? filename filename-old)
+    (external-editor-write-file filename str) ; TODO: check return value
+    (if filename-old
+      (unlink filename-old))
+    (external-editor-context-set-filename! pc filename)
+    (external-editor-context-set-primary! pc primary?)
+    ;; string-split for "xterm -e vim"
+    (let ((cmd-list (string-split external-editor-command " ")))
+      (process-spawn (car cmd-list) (append cmd-list (list filename)))))
   (let ((filename-old (external-editor-context-filename pc))
         (filename (string-append "/tmp/uim-external-editor-" (time) ".txt"))
-        (str (external-editor-acquire-text pc)))
+        (str (external-editor-acquire-text pc 'selection)))
     (if (string? str)
-      (begin
-        (external-editor-write-file filename str) ; TODO: check return value
-        (if filename-old
-          (unlink filename-old))
-        (external-editor-context-set-filename! pc filename)
-        (process-spawn external-editor-command
-          (list external-editor-command filename))))))
+      (launch pc str #f filename filename-old)
+      ;; If no text is selected, try to get all primary text.
+      ;; XXX: may fail on Firefox or Google Chrome.
+      (let ((str-primary (external-editor-acquire-text pc 'primary)))
+        (if (string? str-primary)
+          (launch pc str-primary #t filename filename-old))))))
 
 (define (external-editor-read-file filename)
   ;; file-read-line without newline check.
@@ -177,16 +186,20 @@
     (if filename
       (let ((str (external-editor-read-file filename)))
         (if external-editor-unlink-after-read
-          (begin
-            (unlink filename)
-            (external-editor-context-set-filename! pc #f)))
+          (unlink filename)) ; keep filename in context for repeat read
         (if (and (string? str) (not (string=? str "")))
-          (let ((sel (external-editor-acquire-text pc)))
+          (let ((undo-str
+                  (external-editor-acquire-text pc
+                    (if (external-editor-context-primary pc)
+                      'primary
+                      'selection))))
             (external-editor-context-set-undo-str! pc
-              (if (string? sel)
-                sel
+              (if (string? undo-str)
+                undo-str
                 ""))
             (external-editor-context-set-undo-len! pc (count-char str))
+            (if (external-editor-context-primary pc)
+              (im-delete-text pc 'primary 'beginning 0 'full))
             (im-commit pc str)))))))
 
 (define (external-editor-undo pc)
