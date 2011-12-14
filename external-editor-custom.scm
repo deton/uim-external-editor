@@ -7,7 +7,7 @@
                      external-editor-im-name-label
                      external-editor-im-short-desc)
 
-(define-custom 'external-editor-command "leafpad"
+(define-custom 'external-editor-command "gnome-text-editor"
   '(external-editor)
   '(string ".*")
   (N_ "editor command to launch")
