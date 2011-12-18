@@ -154,8 +154,8 @@
       ;; If no text is selected, try to get all primary text.
       ;; XXX: may fail on Firefox or Google Chrome.
       (let ((str-primary (external-editor-acquire-text pc 'primary)))
-        (if (string? str-primary)
-          (launch pc str-primary #t filename filename-old))))))
+        (launch pc (if (string? str-primary) str-primary "")
+          #t filename filename-old)))))
 
 (define (external-editor-read-file filename)
   ;; file-read-line without newline check.
