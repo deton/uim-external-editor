@@ -31,6 +31,18 @@
 	       (N_ "[external-editor] undo last read")
 	       (N_ "long description will be here"))
 
+(define-custom 'external-editor-read-after-editor-exit #t
+  '(external-editor)
+  '(boolean)
+  (N_ "read temporary file after editor exit")
+  (N_ "long description will be here."))
+
+(define-custom 'external-editor-read-after-file-modify #t
+  '(external-editor)
+  '(boolean)
+  (N_ "read temporary file after file modify")
+  (N_ "long description will be here."))
+
 (define-custom 'external-editor-unlink-after-read #t
   '(external-editor)
   '(boolean)

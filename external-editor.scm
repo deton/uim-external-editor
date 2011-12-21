@@ -42,6 +42,7 @@
       (list 'filename #f)
       (list 'primary #f) ; whether text is acquired from primary or selection
       (list 'pid #f)
+      (list 'mtime #f)
       (list 'undo-len 0)
       (list 'undo-str #f))))
 (define-record 'external-editor-context external-editor-context-rec-spec)
@@ -86,19 +87,52 @@
   (im-commit-raw pc))
 
 (define (external-editor-delay-activating-handler pc)
-  (define (exited? status) (list-ref status 1))
-  (define (signaled? status) (list-ref status 2))
-  (define (stopped? status) (list-ref status 3))
-  (define (exit-status status) (list-ref status 4))
-  (let* ((pid (external-editor-context-pid pc))
-         (status (and pid
-                      (process-waitpid pid
+  (define (process-exited? pid)
+    (define (exited? status) (list-ref status 1))
+    (define (signaled? status) (list-ref status 2))
+    (define (stopped? status) (list-ref status 3))
+    (define (exit-status status) (list-ref status 4))
+    (let ((status (and pid
+                       (process-waitpid pid
                         (assq-cdr '$WNOHANG process-waitpid-options-alist)))))
-    (if (and status
-             (= (car status) pid)
-             (or (exited? status) (signaled? status)))
-      (external-editor-read pc)
-      (im-delay-activate-candidate-selector pc 1))))
+      (and status
+           (= (car status) pid)
+           (or (exited? status) (signaled? status)))))
+  (define (file-modified? filename mtime-prev)
+    (let ((mtime (guard (err (else #f))
+                  (file-mtime filename))))
+      (and mtime-prev mtime (not (= mtime mtime-prev)))))
+  (let* ((editor? (process-exited? (external-editor-context-pid pc)))
+         (file? (file-modified? (external-editor-context-filename pc)
+                                (external-editor-context-mtime pc)))
+         (watch?
+          (cond
+            ((and external-editor-read-after-editor-exit
+                  external-editor-read-after-file-modify)
+              (if editor?
+                (begin
+                  (if file?
+                    (external-editor-read pc))
+                  #f) ; editor exited => not watch file modify any more
+                #t))
+            (external-editor-read-after-editor-exit
+              (if editor?
+                (begin
+                  (external-editor-read pc)
+                  #f)
+                #t))
+            ;; only check file modify for new tab on already running gedit
+            (external-editor-read-after-file-modify
+              (if file?
+                (begin
+                  (external-editor-read pc)
+                  #f)
+                #t))
+            (else
+              #t))))
+    (if watch?
+      (im-delay-activate-candidate-selector pc 1))
+    (list 0 0 0)))
 
 (register-im
  'external-editor
@@ -157,6 +191,9 @@
                pid)))))
   (define (launch pc str primary? filename filename-old)
     (external-editor-write-file filename str) ; TODO: check return value
+    (let ((mtime (guard (err (else #f))
+                  (file-mtime filename))))
+      (external-editor-context-set-mtime! pc mtime))
     (if filename-old
       (unlink filename-old))
     (external-editor-context-set-filename! pc filename)
