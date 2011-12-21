@@ -41,6 +41,7 @@
     (list
       (list 'filename #f)
       (list 'primary #f) ; whether text is acquired from primary or selection
+      (list 'pid #f)
       (list 'undo-len 0)
       (list 'undo-str #f))))
 (define-record 'external-editor-context external-editor-context-rec-spec)
@@ -53,6 +54,8 @@
 
 (define external-editor-init-handler
   (lambda (id im arg)
+    (im-set-delay-activating-handler! im
+      external-editor-delay-activating-handler)
     (let ((pc (external-editor-context-new id im)))
       pc)))
 
@@ -81,6 +84,21 @@
 
 (define (external-editor-key-release-handler pc key state)
   (im-commit-raw pc))
+
+(define (external-editor-delay-activating-handler pc)
+  (define (exited? status) (list-ref status 1))
+  (define (signaled? status) (list-ref status 2))
+  (define (stopped? status) (list-ref status 3))
+  (define (exit-status status) (list-ref status 4))
+  (let* ((pid (external-editor-context-pid pc))
+         (status (and pid
+                      (process-waitpid pid
+                        (assq-cdr '$WNOHANG process-waitpid-options-alist)))))
+    (if (and status
+             (= (car status) pid)
+             (or (exited? status) (signaled? status)))
+      (external-editor-read pc)
+      (im-delay-activate-candidate-selector pc 1))))
 
 (register-im
  'external-editor
@@ -144,8 +162,12 @@
     (external-editor-context-set-filename! pc filename)
     (external-editor-context-set-primary! pc primary?)
     ;; string-split for "xterm -e vim"
-    (let ((cmd-list (string-split external-editor-command " ")))
-      (process-spawn (car cmd-list) (append cmd-list (list filename)))))
+    (let* ((cmd-list (string-split external-editor-command " "))
+           (pid
+            (process-spawn (car cmd-list) (append cmd-list (list filename)))))
+      (external-editor-context-set-pid! pc pid)
+      (if (and pid (im-delay-activate-candidate-selector-supported? pc))
+        (im-delay-activate-candidate-selector pc 1))))
   (let ((filename-old (external-editor-context-filename pc))
         (filename (string-append "/tmp/uim-external-editor-" (time) ".txt"))
         (str (external-editor-acquire-text pc 'selection)))
@@ -182,6 +204,7 @@
       (with-char-codec external-editor-encoding
         (lambda ()
           (%%string-reconstruct! (string-copy str))))))
+  (im-deactivate-candidate-selector pc) ; cancel delay timer
   (let ((filename (external-editor-context-filename pc)))
     (if filename
       (let ((str (external-editor-read-file filename)))
