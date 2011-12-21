@@ -193,11 +193,7 @@
               (else
                pid)))))
   (define (launch pc str primary? filename filename-old)
-    (if (external-editor-context-pid pc)
-      (if (external-editor-process-exited? -1)
-        (external-editor-context-set-pid! pc #f)))
-        ;; XXX: launch even if child is running (this child becomes zombie).
-        ;;      because if pid update fails, cannot launch any more.
+    (external-editor-process-exited? -1) ; for zombie cleanup
     (external-editor-write-file filename str) ; TODO: check return value
     (let ((mtime (guard (err (else #f))
                   (file-mtime filename))))
