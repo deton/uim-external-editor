@@ -86,7 +86,7 @@
 (define (external-editor-key-release-handler pc key state)
   (im-commit-raw pc))
 
-(define (external-editor-delay-activating-handler pc)
+(define (external-editor-child-exited? pc)
   (define (process-exited? pid)
     (define (exited? status) (list-ref status 1))
     (define (signaled? status) (list-ref status 2))
@@ -98,11 +98,14 @@
       (and status
            (= (car status) pid)
            (or (exited? status) (signaled? status)))))
+  (process-exited? (external-editor-context-pid pc)))
+
+(define (external-editor-delay-activating-handler pc)
   (define (file-modified? filename mtime-prev)
     (let ((mtime (guard (err (else #f))
                   (file-mtime filename))))
       (and mtime-prev mtime (not (= mtime mtime-prev)))))
-  (let* ((editor? (process-exited? (external-editor-context-pid pc)))
+  (let* ((editor? (external-editor-child-exited? pc))
          (file? (file-modified? (external-editor-context-filename pc)
                                 (external-editor-context-mtime pc)))
          (watch?
@@ -190,21 +193,27 @@
               (else
                pid)))))
   (define (launch pc str primary? filename filename-old)
-    (external-editor-write-file filename str) ; TODO: check return value
-    (let ((mtime (guard (err (else #f))
-                  (file-mtime filename))))
-      (external-editor-context-set-mtime! pc mtime))
-    (if filename-old
-      (unlink filename-old))
-    (external-editor-context-set-filename! pc filename)
-    (external-editor-context-set-primary! pc primary?)
-    ;; string-split for "xterm -e vim"
-    (let* ((cmd-list (string-split external-editor-command " "))
-           (pid
-            (process-spawn (car cmd-list) (append cmd-list (list filename)))))
-      (external-editor-context-set-pid! pc pid)
-      (if (and pid (im-delay-activate-candidate-selector-supported? pc))
-        (im-delay-activate-candidate-selector pc 1))))
+    (if (or (not (external-editor-context-pid pc))
+            (external-editor-child-exited? pc))
+      (begin
+        (external-editor-context-set-pid! pc #f)
+        (external-editor-write-file filename str) ; TODO: check return value
+        (let ((mtime (guard (err (else #f))
+                      (file-mtime filename))))
+          (external-editor-context-set-mtime! pc mtime))
+        (if filename-old
+          (unlink filename-old))
+        (external-editor-context-set-filename! pc filename)
+        (external-editor-context-set-primary! pc primary?)
+        ;; string-split for "xterm -e vim"
+        (let* ((cmd-list (string-split external-editor-command " "))
+               (pid
+                (process-spawn
+                  (car cmd-list)
+                  (append cmd-list (list filename)))))
+          (external-editor-context-set-pid! pc pid)
+          (if (and pid (im-delay-activate-candidate-selector-supported? pc))
+            (im-delay-activate-candidate-selector pc 1))))))
   (let ((filename-old (external-editor-context-filename pc))
         (filename (string-append "/tmp/uim-external-editor-" (time) ".txt"))
         (str (external-editor-acquire-text pc 'selection)))
