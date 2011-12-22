@@ -31,6 +31,12 @@
 	       (N_ "[external-editor] undo last read")
 	       (N_ "long description will be here"))
 
+(define-custom 'external-editor-switch-default-im-key '("<IgnoreShift>~")
+               '(external-editor)
+	       '(key)
+	       (N_ "[external-editor] switch to default IM")
+	       (N_ "long description will be here"))
+
 (define-custom 'external-editor-read-after-editor-exit #t
   '(external-editor)
   '(boolean)

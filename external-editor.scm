@@ -79,6 +79,8 @@
       ((external-editor-undo-key? key key-state)
         (external-editor-undo pc)
         (external-editor-context-set-undo-str! pc #f))
+      ((external-editor-switch-default-im-key? key key-state)
+        (im-switch-im pc default-im-name))
       (else
         (external-editor-context-set-undo-str! pc #f)
         (im-commit-raw pc)))))
