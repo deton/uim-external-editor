@@ -268,7 +268,9 @@
             (external-editor-context-set-undo-len! pc (count-char str))
             (if (external-editor-context-primary pc)
               (im-delete-text pc 'primary 'beginning 0 'full))
-            (im-commit pc str)))))))
+            (im-commit pc str))))))
+  (if external-editor-switch-default-im-after-read
+    (im-switch-im pc default-im-name)))
 
 (define (external-editor-undo pc)
   (let ((str (external-editor-context-undo-str pc))

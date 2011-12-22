@@ -49,6 +49,12 @@
   (N_ "read temporary file after file modify")
   (N_ "long description will be here."))
 
+(define-custom 'external-editor-switch-default-im-after-read #f
+  '(external-editor)
+  '(boolean)
+  (N_ "switch to default IM after read of temporary file")
+  (N_ "long description will be here."))
+
 (define-custom 'external-editor-unlink-after-read #t
   '(external-editor)
   '(boolean)
