@@ -13,6 +13,12 @@
   (N_ "editor command to launch")
   (N_ "long description will be here."))
 
+(define-custom 'external-editor-tmpdir "/tmp"
+  '(external-editor)
+  '(string ".*")
+  (N_ "directory for temporary file")
+  (N_ "long description will be here."))
+
 (define-custom 'external-editor-launch-key '("e")
                '(external-editor)
 	       '(key)
