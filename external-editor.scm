@@ -108,8 +108,8 @@
       (and mtime-prev mtime (not (= mtime mtime-prev)))))
   (let* ((editor? (external-editor-process-exited?
                     (external-editor-context-pid pc)))
-         (file? (file-modified? (external-editor-context-filename pc)
-                                (external-editor-context-mtime pc)))
+         (filename (external-editor-context-filename pc))
+         (file? (file-modified? filename (external-editor-context-mtime pc)))
          (watch?
           (cond
             ((and external-editor-read-after-editor-exit
@@ -117,7 +117,9 @@
               (if editor?
                 (begin
                   (if file?
-                    (external-editor-read pc))
+                    (external-editor-read pc)
+                    (if external-editor-unlink-after-read
+                      (unlink filename))) ; unlink because editor exited
                   #f) ; editor exited => not watch file modify any more
                 #t))
             (external-editor-read-after-editor-exit
@@ -131,6 +133,10 @@
               (if file?
                 (begin
                   (external-editor-read pc)
+                  ;; XXX: only read once. Because commit cancels selection
+                  ;; and next commit only appends read string not replacing
+                  ;; old contents on Firefox/Chrome. It is problem that
+                  ;; entire string is appended repeatedly on each modify.
                   #f)
                 #t))
             (else
