@@ -9,10 +9,10 @@ uim-external-editorは、セレクションのテキストを一時ファイル�
 
 セレクションやクリップボード内のテキストを取得するため、
 uimのtext acquisition API(surrounding text API)を使うので、
-text acquisition APIに対応したブリッジ(以下)でのみ動作します。
+text acquisition APIに対応した以下のブリッジでのみ動作します。
 
   * uim-gtk
-  * uim-qt4
+  * uim-qt4 (uim-1.7.1ではlineeditのみ対応。textedit対応はtrunk r7266以降)
   * uim-qt3
 
 なお、上記以外のブリッジでも、空の一時ファイルに対して外部エディタを起動し、
@@ -44,10 +44,18 @@ uim-toolbarや「一時切り替えキー」を使って、external-editor IMに
 
 外部エディタで編集・保存した後、rキーを押すと一時ファイルを読み込みます。
 
+候補ウィンドウの遅延表示に対応しているブリッジ(下記)の場合、
+rキーを押さなくても、外部エディタの終了を検出して、
+自動的に一時ファイルの読み込みを行います。
+
+  * uim-gtk (trunk r7324以降)
+  * uim-xim (trunk r7324以降) (text acquisition APIは未対応)
+
 キー 処理
 e    セレクション内容を一時ファイルに保存して外部エディタ起動
 r    一時ファイル内容を読み込み
 u    直前のファイル読み込みを取り消し(入力エリア側にアンドゥ機能が無い場合用)
+~    デフォルトのIMに切り替える
 
 備考
 ====
