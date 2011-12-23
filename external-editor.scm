@@ -55,8 +55,10 @@
 
 (define external-editor-init-handler
   (lambda (id im arg)
-    (im-set-delay-activating-handler! im
-      external-editor-delay-activating-handler)
+    ;; delay candwin is not yet included in release version of uim.
+    (if (symbol-bound? 'im-set-delay-activating-handler!)
+      (im-set-delay-activating-handler! im
+        external-editor-delay-activating-handler))
     (let ((pc (external-editor-context-new id im)))
       pc)))
 
@@ -210,14 +212,16 @@
       (unlink filename-old))
     (external-editor-context-set-filename! pc filename)
     (external-editor-context-set-primary! pc primary?)
-    ;; string-split for "xterm -e vim"
+    ;; string-split for "xterm -e vim -f"
     (let* ((cmd-list (string-split external-editor-command " "))
            (pid
             (process-spawn
               (car cmd-list)
               (append cmd-list (list filename)))))
       (external-editor-context-set-pid! pc pid)
-      (if (and pid (im-delay-activate-candidate-selector-supported? pc))
+      (if (and pid
+               (symbol-bound? 'im-delay-activate-candidate-selector-supported?)
+               (im-delay-activate-candidate-selector-supported? pc))
         (im-delay-activate-candidate-selector pc 1))))
   (let ((filename-old (external-editor-context-filename pc))
         (filename (string-append external-editor-tmpdir
