@@ -2,7 +2,7 @@ uim-external-editor
 ===================
 
 uim-external-editor is an input method for [uim](http://code.google.com/p/uim/)
-which writes selection text to temporary file and launches exteral editor.
+which writes selection text to temporary file and launches external editor.
 
 Requirements
 ============
@@ -59,7 +59,7 @@ Key and function
 
 * e  writes selection text to temporary file and launch editor.
 * r  reads the temporary file and replaces the selection text.
-* u  undo last file read (for text area that does not have undo funciton).
+* u  undo last file read (for text area that does not have undo function).
 * ~  switch to default input method.
 
 Customization
