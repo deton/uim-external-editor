@@ -225,7 +225,7 @@
         (im-delay-activate-candidate-selector pc 1))))
   (let ((filename-old (external-editor-context-filename pc))
         (filename (string-append external-editor-tmpdir
-                                 "/uim-external-editor-" (time) ".txt"))
+                    "/uim-external-editor-" (user-name) "-" (time) ".txt"))
         (str (external-editor-acquire-text pc 'selection)))
     (if (string? str)
       (launch pc str #f filename filename-old)
