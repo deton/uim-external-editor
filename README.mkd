@@ -74,7 +74,7 @@ external-editor is customizable by uim-pref-gtk or uim-pref-qt4.
 * read temporary file after editor exit (default: #t)
 * read temporary file after file modify (default: #t)
 * switch to default IM after read of temporary file (default: #f)
-* unlink temporary file after read (default: #t)
+* remove temporary file after read (default: #t)
 
 * key to launch editor (default: "e")
 * key to read edited file (default: "r")

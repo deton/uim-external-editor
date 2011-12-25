@@ -120,7 +120,7 @@
                 (begin
                   (if file?
                     (external-editor-read pc)
-                    (if external-editor-unlink-after-read
+                    (if external-editor-remove-after-read
                       (unlink filename))) ; unlink because editor exited
                   #f) ; editor exited => not watch file modify any more
                 #t))
@@ -264,7 +264,7 @@
   (let ((filename (external-editor-context-filename pc)))
     (if filename
       (let ((str (external-editor-read-file filename)))
-        (if external-editor-unlink-after-read
+        (if external-editor-remove-after-read
           (unlink filename)) ; keep filename in context for repeat read
         (if (and (string? str) (not (string=? str "")))
           (let ((undo-str
