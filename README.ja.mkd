@@ -7,6 +7,8 @@ uim-external-editorは、セレクションのテキストを一時ファイル�
 必要なもの
 ==========
 
+  * uim trunk r7271以降
+
 セレクションやクリップボード内のテキストを取得するため、
 uimのtext acquisition API(surrounding text API)を使うので、
 text acquisition APIに対応した以下のブリッジでのみ動作します。
@@ -84,3 +86,11 @@ rキーを押さなくても、外部エディタの終了を検出して、
   編集対象の全文字列の取得を試みます。
   ただし、FirefoxやGoogle Chrome等では、うまく取得できない場合があるので、
   (CTRL+Aキー等で)全選択してからeキーを押す方が安全です。
+
+関連
+====
+
+* uim-external-filter https://github.com/deton/uim-external-filter
+* uim-wordcount https://github.com/deton/uim-wordcount
+* uim-japan-util https://github.com/deton/uim-japan-util
+* uim-fmt-ja https://github.com/deton/uim-fmt-ja

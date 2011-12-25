@@ -7,6 +7,8 @@ which writes selection text to temporary file and launches external editor.
 Requirements
 ============
 
+  * uim trunk r7271 or newer.
+
 uim-external-editor uses uim text acquisition API (surrounding text API)
 to acquire selection or clipboard text.
 Uim text acquisition API is supported by following bridges.
@@ -89,3 +91,11 @@ Remark
   external-editor tries to acquire all text in edit area.
   But acquiring all text may fail on Firefox or Google Chrome,
   so it is better to select all text by Ctrl+a key and type 'e' key.
+
+See Also
+========
+
+* uim-external-filter https://github.com/deton/uim-external-filter
+* uim-wordcount https://github.com/deton/uim-wordcount
+* uim-japan-util https://github.com/deton/uim-japan-util
+* uim-fmt-ja https://github.com/deton/uim-fmt-ja
