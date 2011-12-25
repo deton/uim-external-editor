@@ -86,7 +86,8 @@ Remark
 
 * Encoding of temporary file must be UTF-8.
 * If the application exits without reading the temporary file,
-  the temporary file is not removed (/tmp/uim-external-editor-XXXXXXXXXX.txt).
+  the temporary file is not removed
+  (/tmp/uim-external-editor-username-XXXXXXXXX.txt).
 * If no text is selected when 'e' key is typed,
   external-editor tries to acquire all text in edit area.
   But acquiring all text may fail on Firefox or Google Chrome,

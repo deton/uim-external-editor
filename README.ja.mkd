@@ -81,7 +81,7 @@ rキーを押さなくても、外部エディタの終了を検出して、
 * 一時ファイルはUTF-8で保存してください。
 * 一時ファイルを読み込まないでアプリを終了した場合、
   一時ファイルが削除されずに残ったままになります。
-  (/tmp/uim-external-editor-XXXXXXXXXX.txt)
+  (/tmp/uim-external-editor-username-XXXXXXXXX.txt)
 * eキーを押した時に何も選択されていない場合は、
   編集対象の全文字列の取得を試みます。
   ただし、FirefoxやGoogle Chrome等では、うまく取得できない場合があるので、
