@@ -212,7 +212,7 @@
       (unlink filename-old))
     (external-editor-context-set-filename! pc filename)
     (external-editor-context-set-primary! pc primary?)
-    ;; string-split for "xterm -e vim -f"
+    ;; string-split for "xterm -e vim"
     (let* ((cmd-list (string-split external-editor-command " "))
            (pid
             (process-spawn
