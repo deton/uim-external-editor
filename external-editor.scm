@@ -65,7 +65,14 @@
 (define (external-editor-release-handler pc)
   (let ((filename (external-editor-context-filename pc)))
     (if filename
-      (unlink filename))))
+      (unlink filename)))
+  (let ((cleanup-zombie
+          (lambda ()
+            (process-waitpid -1
+              (assq-cdr '$WNOHANG process-waitpid-options-alist)))))
+    (let loop ((ret (cleanup-zombie)))
+      (if (> (car ret) 0)
+        (loop (cleanup-zombie))))))
 
 (define (external-editor-key-press-handler pc key key-state)
   (if (ichar-control? key)
@@ -203,7 +210,6 @@
               (else
                pid)))))
   (define (launch pc str primary? filename filename-old)
-    (external-editor-process-exited? -1) ; for zombie cleanup
     (external-editor-write-file filename str) ; TODO: check return value
     (let ((mtime (guard (err (else #f))
                   (file-mtime filename))))
