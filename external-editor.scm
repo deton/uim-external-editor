@@ -63,6 +63,7 @@
       pc)))
 
 (define (external-editor-release-handler pc)
+  (im-deactivate-candidate-selector pc) ; cancel delay timer
   (let ((filename (external-editor-context-filename pc)))
     (if filename
       (unlink filename)))
