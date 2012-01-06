@@ -219,12 +219,9 @@
       (unlink filename-old))
     (external-editor-context-set-filename! pc filename)
     (external-editor-context-set-primary! pc primary?)
-    ;; string-split for "xterm -e vim"
-    (let* ((cmd-list (string-split external-editor-command " "))
-           (pid
-            (process-spawn
-              (car cmd-list)
-              (append cmd-list (list filename)))))
+    ;; use /bin/sh for "xterm -e vim -c 'se fenc=utf-8'"
+    (let* ((cmd (string-append external-editor-command " " filename))
+           (pid (process-spawn "/bin/sh" (list "/bin/sh" "-c" cmd))))
       (external-editor-context-set-pid! pc pid)
       (if (and pid
                (symbol-bound? 'im-delay-activate-candidate-selector-supported?)
