@@ -91,6 +91,22 @@ rキーを押さなくても、外部エディタの終了を検出して、
 ====
 
 * uim-external-filter https://github.com/deton/uim-external-filter
+* Stumpwm(Window Manager)により、CTRL+A・CTRL+C・CTRL+Vを使ってemacsで編集
+  http://read-eval-print.blogspot.com/2010/11/stumpwm-it-all-text.html
 * uim-wordcount https://github.com/deton/uim-wordcount
 * uim-japan-util https://github.com/deton/uim-japan-util
 * uim-fmt-ja https://github.com/deton/uim-fmt-ja
+
+変更履歴
+========
+
+* 1.0.1 (2012-01-07)
+
+    /bin/shを使ってエディタを起動するように変更。
+    以下のようなエディタコマンド設定に対応するため。
+
+        xterm -e vim -c 'se fenc=utf-8'
+
+* 1.0.0 (2011-12-29)
+
+    最初のリリース。

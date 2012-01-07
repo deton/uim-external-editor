@@ -97,6 +97,20 @@ See Also
 ========
 
 * uim-external-filter https://github.com/deton/uim-external-filter
+* Stumpwm(Window Manager) script to edit text by emacs
+  http://read-eval-print.blogspot.com/2010/11/stumpwm-it-all-text.html
 * uim-wordcount https://github.com/deton/uim-wordcount
 * uim-japan-util https://github.com/deton/uim-japan-util
 * uim-fmt-ja https://github.com/deton/uim-fmt-ja
+
+History
+=======
+
+* 1.0.1 (2012-01-07)
+
+    Change to use /bin/sh to launch editor for command like
+    `xterm -e vim -c 'se fenc=utf-8'`.
+
+* 1.0.0 (2011-12-29)
+
+    Initial release.
