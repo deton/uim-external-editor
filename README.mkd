@@ -96,9 +96,16 @@ Remark
 See Also
 ========
 
-* uim-external-filter https://github.com/deton/uim-external-filter
+* Select text, run following script, edit text and paste from clipboard
+
+    #!/bin/sh
+    xsel -o >~/xsel.tmp; xterm -e vim ~/xsel.tmp; cat ~/xsel.tmp | xsel -i -b
+
+* clipboard manager tools: ClipIt, Parcellite, Glipper, Glippy, Dioden, etc.
 * Stumpwm(Window Manager) script to edit text by emacs
   http://read-eval-print.blogspot.com/2010/11/stumpwm-it-all-text.html
+
+* uim-external-filter https://github.com/deton/uim-external-filter
 * uim-wordcount https://github.com/deton/uim-wordcount
 * uim-japan-util https://github.com/deton/uim-japan-util
 * uim-fmt-ja https://github.com/deton/uim-fmt-ja
