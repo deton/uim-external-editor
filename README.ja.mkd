@@ -92,8 +92,8 @@ rキーを押さなくても、外部エディタの終了を検出して、
 
 * 文字列選択後、以下のスクリプトを実行してエディタでの編集後、ペースト操作
 
-    #!/bin/sh
-    xsel -o >~/xsel.tmp; xterm -e vim ~/xsel.tmp; cat ~/xsel.tmp | xsel -i -b
+        #!/bin/sh
+        xsel -o >~/xsel.tmp; xterm -e vim ~/xsel.tmp; cat ~/xsel.tmp | xsel -i -b
 
 * クリップボード管理ツール: ClipIt, Parcellite, Glipper, Glippy, Dioden等
 * Stumpwm(Window Manager)により、CTRL+A・CTRL+C・CTRL+Vを使ってemacsで編集
