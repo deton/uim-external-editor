@@ -7,15 +7,16 @@ uim-external-editorは、セレクションのテキストを一時ファイル�
 必要なもの
 ==========
 
-  * uim trunk r7271以降
+  * uim 1.7.2以降
 
 セレクションやクリップボード内のテキストを取得するため、
 uimのtext acquisition API(surrounding text API)を使うので、
 text acquisition APIに対応した以下のブリッジでのみ動作します。
 
   * uim-gtk
-  * uim-qt4 (uim-1.7.1ではlineeditのみ対応。textedit対応はtrunk r7266以降)
+  * uim-qt4
   * uim-qt3
+  * MacUIM 0.6.15-1
 
 なお、上記以外のブリッジでも、空の一時ファイルに対して外部エディタを起動し、
 編集後のファイル内容を読み込むことは可能です。
